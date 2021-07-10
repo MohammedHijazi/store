@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 use Traversable;
+
 use Illuminate\Support\Str;
 
 class CategoriesController extends Controller
@@ -34,19 +35,6 @@ class CategoriesController extends Controller
             ->orderBy('categories.name', 'ASC')
             ->get();
 
-        // return collection of stdObj object
-        /*$entries = DB::table('categories')
-            ->where('status', '=', 'active')
-            ->orderBy('created_at', 'DESC')
-            ->orderBy('name', 'ASC')
-            ->get();*/
-
-
-        /*$categories = [];
-        if ($categories instanceof Traversable) {
-            echo 'Yes';
-            return;
-        }*/
 
         return view('admin.categories.index', [
             'categories' => $entries,
@@ -69,38 +57,9 @@ class CategoriesController extends Controller
             'status' => 'active',
         ]);
 
-        // return array of all form fields
-        // $request->all();
-        // dd($request->all());
 
-        // // return single field value
-        // $request->description;
-        // $request->input('description');
-        // $request->get('description');
-        // $request->post('description');
-        // $request->query('description'); // ?description=value
-
-        // Method #1
-        // $category = new Category();
-        // $category->name = $request->post('name');
-        // $category->slug = Str::slug($request->post('name'));
-        // $category->parent_id = $request->post('parent_id');
-        // $category->description = $request->post('description');
-        // $category->status = $request->post('status', 'active');
-        // $category->save();
-
-        // Method #2: Mass assignment
+        //Mass assignment
         $category = Category::create($request->all());
-
-        // Method #3: Mass assignment
-        // $category = new Category([
-        //     'name' => $request->post('name'),
-        //     'slug' => Str::slug($request->post('name')),
-        //     'parent_id' => $request->post('parent_id'),
-        //     'description' => $request->post('description'),
-        //     'status' => $request->post('status', 'active'),
-        // ]);
-        //$category->save();
 
         return redirect()->route('categories.index');
     }
@@ -114,18 +73,24 @@ class CategoriesController extends Controller
 
     public function edit($id)
     {
-        //
+        $category=Category::find($id);
+        $parents = Category::where('id', '<>', $category->id)->get();
+        return view('admin.categories.edit',compact('category','parents'));
     }
 
 
     public function update(Request $request, $id)
     {
-        //
+        $category=Category::find($id);
+        $category->update($request->all());
+
+        return redirect()->route('categories.index');
     }
 
 
     public function destroy($id)
     {
-        //
+        Category::destroy($id);
+        return redirect()->route('categories.index');
     }
 }
