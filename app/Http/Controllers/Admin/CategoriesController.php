@@ -45,8 +45,9 @@ class CategoriesController extends Controller
 
     public function create()
     {
+        $category =new Category();
         $parents = Category::all();
-        return view('admin.categories.create', compact('parents'));
+        return view('admin.categories.create', compact('parents','category'));
     }
 
     public function store(Request $request)
@@ -91,6 +92,6 @@ class CategoriesController extends Controller
     public function destroy($id)
     {
         Category::destroy($id);
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')->with('success', 'Category deleted');
     }
 }
