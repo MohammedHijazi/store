@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoriesController;
-//use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\Admin\ProductsController;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +26,6 @@ Route::get('/admin/categories/{id}/edit', [CategoriesController::class, 'edit'])
 Route::put('/admin/categories/{id}', [CategoriesController::class, 'update'])->name('categories.update');
 Route::delete('/admin/categories/{id}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
 
-// Route::resource('/admin/categories', 'Admin\CategoriesController');
+Route::resource('/admin/products', 'Admin\ProductsController');
 
 

@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('categories.update',$category->id) }}" method="post">
+    <form action="{{ route('categories.update',$category->id) }}" method="post" enctype="multipart/form-data">
         @method('put')
         @csrf
     @include('admin.categories._form',[

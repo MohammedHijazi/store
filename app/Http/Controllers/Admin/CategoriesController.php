@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,8 +51,17 @@ class CategoriesController extends Controller
         return view('admin.categories.create', compact('parents','category'));
     }
 
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
+        $rules = [
+            'name' => 'required|string|max:255|min:3|unique:categories',
+            'parent_id' => 'required|int|exists:categories,id',
+            'description' => 'nullable|min:5',
+            'status' => 'required|in:active,draft',
+            'image' => 'image|max:512000|dimensions:min_width=300,min_height=300',
+        ];
+       // $clean = $request->validate($rules);
+
         // Request Merge
         $request->merge([
             'slug' => Str::slug($request->post('name')),
