@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoriesController;
-use App\Http\Controllers\Admin\ProductsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
 
 Route::get('/admin/categories', [CategoriesController::class, 'index'])->name('categories.index');
 Route::get('/admin/categories/create', [CategoriesController::class, 'create'])->name('categories.create');
@@ -29,3 +30,8 @@ Route::delete('/admin/categories/{id}', [CategoriesController::class, 'destroy']
 Route::resource('/admin/products', 'Admin\ProductsController');
 
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__.'/auth.php';
