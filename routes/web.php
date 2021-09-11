@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoriesController;
+use App\Http\Controllers\Admin\ProductsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 
@@ -27,8 +28,16 @@ Route::get('/admin/categories/{id}/edit', [CategoriesController::class, 'edit'])
 Route::put('/admin/categories/{id}', [CategoriesController::class, 'update'])->name('categories.update');
 Route::delete('/admin/categories/{id}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
 
-Route::resource('/admin/products', 'Admin\ProductsController');
+Route::resource('/admin/products', 'Admin\ProductsController')->middleware('auth');
 
+Route::resource('/admin/roles', 'Admin\RolesController')->middleware('auth');
+
+Route::get('/products/trash', [ProductsController::class, 'trash'])
+    ->name('products.trash');
+Route::put('/products/trash/{id?}', [ProductsController::class, 'restore'])
+    ->name('products.restore');
+Route::delete('/products/trash/{id?}', [ProductsController::class, 'forceDelete'])
+    ->name('products.force-delete');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

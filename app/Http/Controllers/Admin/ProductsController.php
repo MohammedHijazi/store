@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -34,6 +35,7 @@ class ProductsController extends Controller
 
     public function create()
     {
+        Gate::authorize('products.create');
         $categories = Category::all();
         return view('admin.products.create',[
             'categories'=>$categories,
@@ -68,7 +70,7 @@ class ProductsController extends Controller
         $product = Product::findOrFail($id);
         return view('admin.products.edit', [
             'product' => $product,
-            'categories' => Category::all(),
+            'categories' => Category::withoutTrashed(),
         ]);
     }
 
@@ -100,10 +102,50 @@ class ProductsController extends Controller
 
     public function destroy($id)
     {
+        Gate::authorize('products.delete');
+
         $product = Product::findOrFail($id);
         $product->delete();
-        Storage::disk('uploads')->delete($product->image_path);
+       // Storage::disk('uploads')->delete($product->image_path);
         return redirect()->route('products.index')
             ->with('success', "Product ($product->name) deleted.");
+    }
+
+    public function trash()
+    {
+        $products = Product::withoutGlobalScope('active')->onlyTrashed()->paginate();
+        return view('admin.products.trash', [
+            'products' => $products,
+        ]);
+    }
+
+    public function restore(Request $request, $id=null)
+    {
+        if ($id) {
+            $product = Product::withoutGlobalScope('active')->onlyTrashed()->findOrFail($id);
+            $product->restore();
+
+            return redirect()->route('products.index')
+                ->with('success', "Product ($product->name) restored.");
+        }
+
+        Product::withoutGlobalScope('active')->onlyTrashed()->restore();
+        return redirect()->route('products.index')
+            ->with('success', "All trashed products restored.");
+    }
+
+    public function forceDelete($id = null)
+    {
+        if ($id) {
+            $product = Product::withoutGlobalScope('active')->onlyTrashed()->findOrFail($id);
+            $product->forceDelete();
+
+            return redirect()->route('products.index')
+                ->with('success', "Product ($product->name) deleted forever.");
+        }
+
+        Product::withoutGlobalScope('active')->onlyTrashed()->forceDelete();
+        return redirect()->route('products.index')
+            ->with('success', "All trashed products deleted forever.");
     }
 }

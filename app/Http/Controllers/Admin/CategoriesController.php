@@ -14,6 +14,9 @@ use Illuminate\Support\Str;
 
 class CategoriesController extends Controller
 {
+    public function __construct(){
+        $this->middleware('auth');
+    }
 
     public function index()
     {
@@ -34,6 +37,7 @@ class CategoriesController extends Controller
             //->where('categories.status', '=', 'active')
             ->orderBy('categories.created_at', 'DESC')
             ->orderBy('categories.name', 'ASC')
+            ->withTrashed()
             ->get();
 
 
